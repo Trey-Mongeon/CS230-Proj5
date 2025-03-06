@@ -116,6 +116,7 @@ void EntityContainerFree(EntityContainer** entities)
 		if (&(*entities)->entitiesArr)
 		{
 			EntityContainerFreeAll(*entities);
+			free(*entities);
 		}
 		*entities = NULL;
 	}

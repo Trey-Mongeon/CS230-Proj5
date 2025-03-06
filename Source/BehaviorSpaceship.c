@@ -19,6 +19,7 @@
 #include "Vector2D.h"
 #include "EntityFactory.h"
 #include "Scene.h"
+#include "Teleporter.h"
 
 #define PI 3.14159
 
@@ -125,6 +126,7 @@ static void BehaviorSpaceshipOnUpdate(Behavior* behavior, float dt)
 			}
 			break;
 	}
+	TeleporterUpdateEntity(behavior->parent);
 }
 
 

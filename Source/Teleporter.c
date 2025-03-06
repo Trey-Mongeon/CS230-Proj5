@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------
 //
-// File Name:	BehaviorBullet.c
+// File Name:	Teleporter.c
 // Author(s):	Trey Mongeon (tmongeon), Doug Schilling (dschilling)
-// Project:		Project 4
+// Project:		Project 5
 // Course:		CS230S25
 //
 // Copyright © 2025 DigiPen (USA) Corporation.
@@ -10,20 +10,16 @@
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
-#include "BehaviorBullet.h"
-#include "Behavior.h"
-#include "Entity.h"
+#include "DGL.h"
 #include "Teleporter.h"
+#include "Vector2D.h"
+#include "Entity.h"
+#include "Physics.h"
+#include "Transform.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
 //------------------------------------------------------------------------------
-
-enum bulletState
-{
-	cBulletInvalid = -1,
-	cBulletIdle
-};
 
 //------------------------------------------------------------------------------
 // Private Structures:
@@ -41,74 +37,47 @@ enum bulletState
 // Private Function Declarations:
 //------------------------------------------------------------------------------
 
-static void BehaviorBulletOnInit(Behavior* behavior);
-static void BehaviorBulletOnUpdate(Behavior* behavior, float dt);
-static void BehaviorBulletOnExit(Behavior* behavior);
-static void BehaviorBulletUpdateLifeTimer(Behavior* behavior, float dt);
-
-
 //------------------------------------------------------------------------------
 // Public Functions:
 //------------------------------------------------------------------------------
 
-// Dynamically allocate a new (Bullet) behavior component.
-// (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
-Behavior* BehaviorBulletCreate(void)
+// When an Entity goes off-screen, teleport it to the other side.
+// Params:
+//	 entity = Pointer to the Entity to be checked.
+void TeleporterUpdateEntity(Entity* entity)
 {
-	Behavior* bulletBehavior = calloc(1, sizeof(Behavior));
+	DGL_Vec2 window = DGL_Window_GetSize();
 
-	if (bulletBehavior)
-	{
-		bulletBehavior->stateCurr = cBulletInvalid;
-		bulletBehavior->stateNext = cBulletInvalid;
-		bulletBehavior->onInit = BehaviorBulletOnInit;
-		bulletBehavior->onUpdate = BehaviorBulletOnUpdate;
-		bulletBehavior->onExit = BehaviorBulletOnExit;
+	Vector2DScale(&window, &window, 0.5f);
 
-		return bulletBehavior;
-	}
-	else
+	Physics* entityPhysics = EntityGetPhysics(entity);
+
+	const DGL_Vec2 entityVel = *PhysicsGetVelocity(entityPhysics);
+
+	Transform* entityTransform = EntityGetTransform(entity);
+
+	DGL_Vec2 entityTranslation = *TransformGetTranslation(entityTransform);
+
+	if (entityVel.x > 0 && entityTranslation.x > window.x)
 	{
-		return NULL;
+		entityTranslation.x = -window.x;
 	}
+	if (entityVel.x < 0 && entityTranslation.x < -window.x)
+	{
+		entityTranslation.x = window.x;
+	}
+	if (entityVel.y > 0 && entityTranslation.y > window.y)
+	{
+		entityTranslation.y = -window.y;
+	}
+	if (entityVel.y < 0 && entityTranslation.y < -window.y)
+	{
+		entityTranslation.y = window.y;
+	}
+	TransformSetTranslation(entityTransform, &entityTranslation);
 }
 
 //------------------------------------------------------------------------------
 // Private Functions:
 //------------------------------------------------------------------------------
 
-static void BehaviorBulletOnInit(Behavior* behavior)
-{
-	UNREFERENCED_PARAMETER(behavior);
-}
-
-
-static void BehaviorBulletOnUpdate(Behavior* behavior, float dt)
-{
-	switch (behavior->stateCurr)
-	{
-	case cBulletIdle:
-		BehaviorBulletUpdateLifeTimer(behavior, dt);
-	}
-	TeleporterUpdateEntity(behavior->parent);
-}
-
-
-static void BehaviorBulletOnExit(Behavior* behavior)
-{
-	UNREFERENCED_PARAMETER(behavior);
-}
-
-
-static void BehaviorBulletUpdateLifeTimer(Behavior* behavior, float dt)
-{
-	if (behavior->timer > 0)
-	{
-		behavior->timer -= dt;
-		
-		if (behavior->timer <= 0)
-		{
-			EntityDestroy(behavior->parent);
-		}
-	}
-}

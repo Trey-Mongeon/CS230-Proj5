@@ -137,6 +137,16 @@ void MeshRead(Mesh* mesh, Stream stream)
 			}
 			mesh->meshResource = DGL_Graphics_EndMesh();
 		}
+		else if (strcmp(StreamReadToken(stream), "Quad") == 0)
+		{
+			DGL_Vec2 halfSize;
+			StreamReadVector2D(stream, &halfSize);
+			int columns = StreamReadInt(stream);
+			int rows = StreamReadInt(stream);
+			const char* name = StreamReadToken(stream);
+
+			MeshBuildQuad(mesh, halfSize.x, halfSize.y, 1.0f / columns, 1.0f / rows, name);
+		}
 	}
 }
 

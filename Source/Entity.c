@@ -20,6 +20,7 @@
 #include "Behavior.h"
 #include "BehaviorBullet.h"
 #include "BehaviorSpaceship.h"
+#include "Collider.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -55,6 +56,9 @@ typedef struct Entity
 	Animation* animation;
 
 	Behavior* behavior;
+
+	// Pointer to an attached Collider component.
+	Collider* collider;
 
 	bool isDestroyed;
 
@@ -230,6 +234,8 @@ Entity* EntityClone(const Entity* other)
 			EntityAddPhysics(entity, PhysicsClone(other->physics));
 			EntityAddSprite(entity, SpriteClone(other->sprite));
 			EntityAddTransform(entity, TransformClone(other->transform));
+			EntityAddCollider(entity, ColliderClone(other->collider));
+			ColliderSetParent(entity->collider, entity);
 		}
 		return entity;
 	}

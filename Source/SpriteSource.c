@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "SpriteSource.h"
 #include "DGL.h"
+#include "Stream.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -22,6 +23,15 @@
 //------------------------------------------------------------------------------
 typedef struct SpriteSource
 {
+	// The name of the sprite source.
+	// A buffer is used to allow each sprite source to have a unique name.
+	// The buffer is hardcoded to an arbitrary length that will be sufficient
+	//	 for all CS230 assignments.  You may, instead, use dynamically-allocated
+	//	 arrays for this purpose but the additional complexity is unnecessary
+	//	 and it is your responsibility to ensure that the memory is successfully
+	//	 allocated and deallocated in all possible situations.
+	char name[32];
+
 	// The dimensions of the sprite sheet.
 	// (Hint: These should be initialized to (1, 1).)
 	int	numRows;
@@ -69,6 +79,7 @@ SpriteSource* SpriteSourceCreate()
 
 }
 
+
 // Free the memory associated with a SpriteSource object.
 // (NOTE: The DGL_Texture resource must be freed using DGL_Graphics_FreeTexture().)
 // (NOTE: The SpriteSource object must be freed using free().
@@ -84,6 +95,7 @@ void SpriteSourceFree(SpriteSource** spriteSource)
 		*spriteSource = NULL;
 	}
 }
+
 
 // Load a texture from a file (may be an Col x Row sprite sheet).
 // (NOTE: The folder path, "Assets/" should be prepended to the texture name before
@@ -109,6 +121,54 @@ void SpriteSourceLoadTexture(SpriteSource* spriteSource, int numCols, int numRow
 	}
 }
 
+
+// Read the properties of a SpriteSource object from a file.
+// 1: Read a token from the stream.
+// 2: If the token read was "SpriteSource",
+//	  a: Read a token from the stream and store it in the name variable.
+//       (Hint: use strcpy_s for this purpose.)
+//    b: Read the numCols and numRows values from the stream.
+//	  c: Read a token from the stream. This is the path name of a texture.
+//	  d: Call DGL_Graphics_LoadTexture and store the texture resource.
+// Params:
+//	 spriteSource = Pointer to the SpriteSource object.
+//	 stream = Pointer to the data stream used for reading.
+void SpriteSourceRead(SpriteSource* spriteSource, Stream stream)
+{
+	const char* token = StreamReadToken(stream);
+	if (strcmp(token, "SpriteSource") == 0)
+	{
+		const char* name = StreamReadToken(stream);
+		strcpy_s(spriteSource->name, sizeof(spriteSource->name), name);
+		spriteSource->numCols = StreamReadInt(stream);
+		spriteSource->numRows = StreamReadInt(stream);
+		const char* filePath = StreamReadToken(stream);
+		spriteSource->texture = DGL_Graphics_LoadTexture(filePath);
+	}
+}
+
+
+// Determines if a SpriteSource has the specified name.
+// Params:
+//	 spriteSource = Pointer to the SpriteSource object.
+//	 name = Pointer to the name to be compared.
+// Returns:
+//	 If the SpriteSource and name pointers are valid,
+//		then perform a string comparison and return the result (match = true),
+//		else return false.
+bool SpriteSourceIsNamed(const SpriteSource* spriteSource, const char* name)
+{
+	if (spriteSource && name)
+	{
+		if (strcmp(spriteSource->name, name) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
 // Returns the maximum number of frames possible, given the dimensions of the sprite sheet.
 // (Hint: Frame count = numCols * numRows.)
 // Params:
@@ -128,6 +188,7 @@ unsigned SpriteSourceGetFrameCount(const SpriteSource* spriteSource)
 		return 0;
 	}
 }
+
 
 // Returns the UV coordinates of the specified frame in a sprite sheet.
 // (Hint: Refer to the Week 2 lecture slides for the correct calculations.)
@@ -149,6 +210,7 @@ void SpriteSourceGetUV(const SpriteSource* spriteSource, unsigned int frameIndex
 	}
 }
 
+
 // Sets a SpriteSource texture for rendering.
 // Params:
 //	 spriteSource = Pointer to the SpriteSource object.
@@ -156,6 +218,7 @@ void SpriteSourceSetTexture(const SpriteSource* spriteSource)
 {
 	DGL_Graphics_SetTexture(spriteSource->texture);
 }
+
 
 // Sets the texture UV offsets for rendering.
 // Params:
@@ -169,6 +232,7 @@ void SpriteSourceSetTextureOffset(const SpriteSource* spriteSource, unsigned fra
 		DGL_Graphics_SetCB_TextureOffset(&offsetVector);
 	}
 }
+
 
 //------------------------------------------------------------------------------
 // Private Functions:

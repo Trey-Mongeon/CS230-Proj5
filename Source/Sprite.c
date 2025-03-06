@@ -19,6 +19,7 @@
 #include "Trace.h"
 #include "Matrix2D.h"
 #include "MeshLibrary.h"
+#include "SpriteSourceLibrary.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -135,8 +136,13 @@ void SpriteRead(Sprite* sprite, Stream stream)
 		const char* meshName = StreamReadToken(stream);
 		const Mesh* builtMesh = MeshLibraryBuild(meshName);
 		SpriteSetMesh(sprite, builtMesh);
+
+		const char* sourceName = StreamReadToken(stream);
+		const SpriteSource* spriteSource  = SpriteSourceLibraryBuild(sourceName);
+		SpriteSetSpriteSource(sprite, spriteSource);
 	}
 }
+
 
 // Render a Sprite (Sprite can be textured or untextured).
 // Params:
@@ -190,6 +196,7 @@ void SpriteRender(const Sprite* sprite, Transform* transform)
 	}
 }
 
+
 // Get a Sprite's alpha value.
 // Params:
 //	 sprite = Pointer to the Sprite component.
@@ -209,6 +216,7 @@ float SpriteGetAlpha(const Sprite* sprite)
 	}
 }
 
+
 // Set a Sprite's alpha value.
 // (NOTE: Make sure to clamp the resulting alpha value between 0.0f and 1.0f, as the
 //	input value might be outside of this range.)
@@ -225,6 +233,7 @@ void SpriteSetAlpha(Sprite* sprite, float alpha)
 	sprite->alpha = alpha;
 	}
 }
+
 
 // Set a Sprite's current frame.
 // (NOTE: You must verify that the frameIndex parameter is within the
@@ -252,6 +261,7 @@ void SpriteSetFrame(Sprite* sprite, unsigned int frameIndex)
 
 }
 
+
 // Set the Sprite's mesh.
 // (NOTE: This mesh may be textured or untextured.)
 // (NOTE: This mesh may contain any number of triangles.)
@@ -265,6 +275,7 @@ void SpriteSetMesh(Sprite* sprite, const Mesh* mesh)
 		sprite->mesh = mesh;
 	}
 }
+
 
 // Set a new SpriteSource for the specified Sprite.
 // (NOTE: The spriteSource parameter may be NULL.  This will remove an existing
