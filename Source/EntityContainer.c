@@ -258,7 +258,7 @@ void EntityContainerCheckCollisions(EntityContainer* entities)
 		{
 			if (EntityGetCollider(entities->entitiesArr[i]))
 			{
-				for (unsigned int j = i; j < entities->entityCount; ++j)
+				for (unsigned int j = i + 1; j < entities->entityCount; ++j)
 				{
 					if (EntityGetCollider(entities->entitiesArr[j]))
 					{

@@ -20,6 +20,8 @@
 #include "EntityFactory.h"
 #include "Scene.h"
 #include "Teleporter.h"
+#include "Collider.h"
+#include "Sprite.h"
 
 #define PI 3.14159
 
@@ -31,14 +33,16 @@ enum spaceshipState
 {
 	cSpaceshipInvalid = -1,
 	cSpaceshipIdle,
-	cSpaceshipThrust
+	cSpaceshipThrust,
+	cSpaceshipDead
 };
 
 static const float spaceshipAcceleration = 150.0f;
 static const float spaceshipSpeedMax = 500.0f;
 static const float spaceshipTurnRateMax = (float)PI / 1.5f;
-static const float spaceshipWeaponCooldownTime = 0.034f;
+static const float spaceshipWeaponCooldownTime = 0.25f;
 static const float spaceshipWeaponBulletSpeed = 750.0f;
+static const float spaceshipDeathDuration = 3.0f;
 
 
 //------------------------------------------------------------------------------
@@ -64,6 +68,7 @@ static void BehaviorSpaceshipUpdateRotation(Behavior* behavior, float dt);
 static void BehaviorSpaceshipUpdateVelocity(Behavior* behavior, float dt);
 static void BehaviorSpaceshipUpdateWeapon(Behavior* behavior, float dt);
 static void BehaviorSpaceshipSpawnBullet(Behavior* behavior);
+static void BehaviorSpaceshipCollisionHandler(Entity* entity1, Entity* entity2);
 
 
 //------------------------------------------------------------------------------
@@ -95,12 +100,24 @@ Behavior* BehaviorSpaceshipCreate(void)
 
 static void BehaviorSpaceshipOnInit(Behavior* behavior)
 {
-	UNREFERENCED_PARAMETER(behavior);
+	if (behavior->stateCurr == cSpaceshipIdle)
+	{
+		Collider* entityCollider = EntityGetCollider(behavior->parent);
+		if (entityCollider)
+		{
+			ColliderSetCollisionHandler(entityCollider, BehaviorSpaceshipCollisionHandler);
+		}
+	}
+	if (behavior->stateCurr == cSpaceshipDead)
+	{
+		behavior->timer = spaceshipDeathDuration;
+	}
 }
 
 
 static void BehaviorSpaceshipOnUpdate(Behavior* behavior, float dt)
 {
+
 	switch (behavior->stateCurr)
 	{
 		case cSpaceshipIdle:
@@ -126,6 +143,49 @@ static void BehaviorSpaceshipOnUpdate(Behavior* behavior, float dt)
 				behavior->stateNext = cSpaceshipIdle;
 			}
 			break;
+
+		case cSpaceshipDead:
+
+			behavior->timer -= dt;
+			if (behavior->timer <= 0)
+			{
+				SceneRestart();
+			}
+			//************** DEATH IMPLEMENTATION
+
+			Physics* parentPhysics = EntityGetPhysics(behavior->parent);
+
+			float rotVel = PhysicsGetRotationalVelocity(parentPhysics);
+
+			rotVel = spaceshipTurnRateMax * 5;
+
+			Transform* parentTransform = EntityGetTransform(behavior->parent);
+
+			float shipRot = TransformGetRotation(parentTransform);
+
+			Vector2D vecFromShipRot;
+			Vector2DFromAngleRad(&vecFromShipRot, shipRot);
+
+			const Vector2D* velocity = PhysicsGetVelocity(parentPhysics);
+
+			Vector2D newVelocity;
+
+			Vector2DScaleAdd(&newVelocity, &vecFromShipRot, spaceshipAcceleration * dt * 5, velocity);
+
+			float speed = Vector2DLength(&newVelocity);
+
+			Vector2DScale(&newVelocity, &newVelocity, speed / speed - 2.5f);
+
+			PhysicsSetVelocity(parentPhysics, &newVelocity);
+
+			float alpha = SpriteGetAlpha(EntityGetSprite(behavior->parent));
+
+			alpha -= dt * 2;
+
+			SpriteSetAlpha(EntityGetSprite(behavior->parent), alpha);
+
+			PhysicsSetRotationalVelocity(parentPhysics, rotVel);
+
 	}
 	TeleporterUpdateEntity(behavior->parent);
 }
@@ -167,6 +227,12 @@ static void BehaviorSpaceshipUpdateRotation(Behavior* behavior, float dt)
 
 		float rotVel = 0.0f;
 		PhysicsSetRotationalVelocity(parentPhysics, rotVel);
+	}
+
+	// REMOVE THIS WHEN DONE TESTING***********************************************************************************
+	if (DGL_Input_KeyDown('R'))
+	{
+		behavior->stateNext = cSpaceshipDead;
 	}
 }
 
@@ -249,5 +315,18 @@ static void BehaviorSpaceshipSpawnBullet(Behavior* behavior)
 		PhysicsSetVelocity(bulletPhysics, &vecFromShipRot);
 
 		SceneAddEntity(bullet);
+	}
+}
+
+
+static void BehaviorSpaceshipCollisionHandler(Entity* entity1, Entity* entity2)
+{
+	if (entity1 && entity2)
+	{
+		if (EntityIsNamed(entity2, "Asteroid"))
+		{
+			Behavior* entity1Behavior = EntityGetBehavior(entity1);
+			entity1Behavior->stateNext = cSpaceshipDead;
+		}
 	}
 }
