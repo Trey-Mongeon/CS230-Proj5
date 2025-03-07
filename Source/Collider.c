@@ -140,13 +140,13 @@ void ColliderSetParent(Collider* collider, Entity* parent)
 //	 other = Pointer to the second Collider component.
 void ColliderCheck(Collider* collider, Collider* other)
 {
-	Entity* colliderTransform = EntityGetTransform(collider->parent);
-	DGL_Vec2* colliderScale = TransformGetScale(colliderTransform);
+	Transform* colliderTransform = EntityGetTransform(collider->parent);
+	const DGL_Vec2* colliderScale = TransformGetScale(colliderTransform);
 	float radius1 = colliderScale->x / 2.0f;
 	DGL_Vec2 colliderTranslation = *TransformGetTranslation(colliderTransform);
 
-	Entity* otherTransform = EntityGetTransform(other->parent);
-	DGL_Vec2* otherScale = TransformGetScale(otherTransform);
+	Transform* otherTransform = EntityGetTransform(other->parent);
+	const DGL_Vec2* otherScale = TransformGetScale(otherTransform);
 	float radius2 = otherScale->x / 2.0f;
 	DGL_Vec2 otherTranslation = *TransformGetTranslation(otherTransform);
 
@@ -157,7 +157,14 @@ void ColliderCheck(Collider* collider, Collider* other)
 
 	if (lengthBetween <= radius1 + radius2)
 	{
-
+		if (collider->handler)
+		{
+			collider->handler(collider->parent, other->parent);
+		}
+		if (other->handler)
+		{
+			other->handler(other->parent, collider->parent);
+		}
 	}
 }
 
@@ -170,7 +177,10 @@ void ColliderCheck(Collider* collider, Collider* other)
 //	 handler = Pointer to the collision event handler (may be NULL).
 void ColliderSetCollisionHandler(Collider* collider, CollisionEventHandler handler)
 {
-
+	if (collider)
+	{
+		collider->handler = handler;
+	}
 }
 
 

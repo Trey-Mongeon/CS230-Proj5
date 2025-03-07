@@ -111,6 +111,7 @@ void EntityFree(Entity** entity)
 		TransformFree(&(*entity)->transform);
 		AnimationFree(&(*entity)->animation);
 		BehaviorFree(&(*entity)->behavior);
+		ColliderFree(&(*entity)->collider);
 		free(*entity);
 
    		*entity = NULL;
@@ -235,7 +236,6 @@ Entity* EntityClone(const Entity* other)
 			EntityAddSprite(entity, SpriteClone(other->sprite));
 			EntityAddTransform(entity, TransformClone(other->transform));
 			EntityAddCollider(entity, ColliderClone(other->collider));
-			ColliderSetParent(entity->collider, entity);
 		}
 		return entity;
 	}
@@ -297,6 +297,42 @@ void EntityRead(Entity* entity, Stream stream)
 				break;
 			}
 		}
+	}
+}
+
+
+// Attach a Collider component to an Entity.
+// (NOTE: This function must also set the Collider component's parent pointer
+//	  by calling the ColliderSetParent() function.)
+// Params:
+//	 entity = Pointer to the Entity.
+//   collider = Pointer to the Collider component to be attached.
+void EntityAddCollider(Entity* entity, Collider* collider)
+{
+	if (entity && collider)
+	{
+		entity->collider = collider;
+		ColliderSetParent(collider, entity);
+	}
+}
+
+
+// Get the Collider component attached to an Entity.
+// Params:
+//	 entity = Pointer to the Entity.
+// Returns:
+//	 If the Entity pointer is valid,
+//		then return a pointer to the attached Collider component,
+//		else return NULL.
+Collider* EntityGetCollider(const Entity* entity)
+{
+	if (entity)
+	{
+		return entity->collider;
+	}
+	else
+	{
+		return NULL;
 	}
 }
 

@@ -83,6 +83,7 @@ Behavior* BehaviorSpaceshipCreate(void)
 		spaceshipBehavior->onInit = BehaviorSpaceshipOnInit;
 		spaceshipBehavior->onUpdate = BehaviorSpaceshipOnUpdate;
 		spaceshipBehavior->onExit = BehaviorSpaceshipOnExit;
+		spaceshipBehavior->memorySize = sizeof(Behavior);
 
 		return spaceshipBehavior;
 	}

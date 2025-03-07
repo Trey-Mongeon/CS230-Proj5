@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "EntityContainer.h"
 #include "Entity.h"
+#include "Collider.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -238,3 +239,33 @@ void EntityContainerRenderAll(const EntityContainer* entities)
 	}
 }
 
+
+// Check for collisions between all Entities in the EntityContainer.
+// (HINT: Only check for collisions between Entities that contain a Collider.)
+// (NOTE: There must never be more than 1 collision check between any two
+//    Entities in the container.  Additionally, each Entity must never
+//    check for a collision with itself.  To ensure this is the case, each time
+//    an Entity with a Collider is found, check for collisions against only the
+//    remaining Entities in the list (starting with the Entity following the
+//    current Entity.)
+// Params:
+//   entities = Pointer to the EntityContainer.
+void EntityContainerCheckCollisions(EntityContainer* entities)
+{
+	if (entities)
+	{
+		for (unsigned int i = 0; i < entities->entityCount; ++i)
+		{
+			if (EntityGetCollider(entities->entitiesArr[i]))
+			{
+				for (unsigned int j = i; j < entities->entityCount; ++j)
+				{
+					if (EntityGetCollider(entities->entitiesArr[j]))
+					{
+						ColliderCheck(EntityGetCollider(entities->entitiesArr[i]), EntityGetCollider(entities->entitiesArr[j]));
+					}
+				}
+			}
+		}
+	}
+}

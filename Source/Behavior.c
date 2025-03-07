@@ -54,11 +54,11 @@ Behavior* BehaviorClone(Behavior* other)
 {
 	if (other)
 	{
-		Behavior* newBehavior = calloc(1, sizeof(Behavior));
+		Behavior* newBehavior = calloc(1, (other->memorySize));
 
 		if (newBehavior)
 		{
-			*newBehavior = *other;
+			memcpy(newBehavior, other, other->memorySize);
 			return newBehavior;
 		}
 	}

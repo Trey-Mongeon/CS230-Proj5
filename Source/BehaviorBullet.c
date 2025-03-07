@@ -14,6 +14,7 @@
 #include "Behavior.h"
 #include "Entity.h"
 #include "Teleporter.h"
+#include "Collider.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -46,6 +47,8 @@ static void BehaviorBulletOnUpdate(Behavior* behavior, float dt);
 static void BehaviorBulletOnExit(Behavior* behavior);
 static void BehaviorBulletUpdateLifeTimer(Behavior* behavior, float dt);
 
+static void BehaviorBulletCollisionHandler(Entity* entity1, Entity* entity2);
+
 
 //------------------------------------------------------------------------------
 // Public Functions:
@@ -64,6 +67,7 @@ Behavior* BehaviorBulletCreate(void)
 		bulletBehavior->onInit = BehaviorBulletOnInit;
 		bulletBehavior->onUpdate = BehaviorBulletOnUpdate;
 		bulletBehavior->onExit = BehaviorBulletOnExit;
+		bulletBehavior->memorySize = sizeof(Behavior);
 
 		return bulletBehavior;
 	}
@@ -79,7 +83,14 @@ Behavior* BehaviorBulletCreate(void)
 
 static void BehaviorBulletOnInit(Behavior* behavior)
 {
-	UNREFERENCED_PARAMETER(behavior);
+	if (behavior->stateCurr == cBulletIdle)
+	{
+		Collider* entityCollider = EntityGetCollider(behavior->parent);
+		if (entityCollider)
+		{
+			ColliderSetCollisionHandler(entityCollider, BehaviorBulletCollisionHandler);
+		}
+	}
 }
 
 
@@ -109,6 +120,18 @@ static void BehaviorBulletUpdateLifeTimer(Behavior* behavior, float dt)
 		if (behavior->timer <= 0)
 		{
 			EntityDestroy(behavior->parent);
+		}
+	}
+}
+
+
+static void BehaviorBulletCollisionHandler(Entity* entity1, Entity* entity2)
+{
+	if (entity1 && entity2)
+	{
+		if (EntityIsNamed(entity2, "Asteroid"))
+		{
+			EntityDestroy(entity1);
 		}
 	}
 }
