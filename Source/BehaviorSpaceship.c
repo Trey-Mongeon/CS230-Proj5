@@ -174,7 +174,7 @@ static void BehaviorSpaceshipOnUpdate(Behavior* behavior, float dt)
 
 			float speed = Vector2DLength(&newVelocity);
 
-			Vector2DScale(&newVelocity, &newVelocity, speed / speed - 2.5f);
+			Vector2DScale(&newVelocity, &newVelocity, speed / speed - 2.4f);  // Ship splits in 2 on purpose
 
 			PhysicsSetVelocity(parentPhysics, &newVelocity);
 
