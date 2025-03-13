@@ -144,7 +144,7 @@ static void AsteroidsSceneUpdate(float dt)
 {
 	Entity* foundEntity = SceneFindEntityByName("Asteroid");
 
-	if (foundEntity)
+	if (!foundEntity)
 	{
 		AsteroidsSceneSpawnAsteroidWave();
 	}
