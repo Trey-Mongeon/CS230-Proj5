@@ -21,6 +21,8 @@
 #include "BehaviorBullet.h"
 #include "BehaviorSpaceship.h"
 #include "Collider.h"
+#include "BehaviorAsteroid.h"
+#include "BehaviorHudText.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -291,6 +293,24 @@ void EntityRead(Entity* entity, Stream stream)
 				Behavior* bulletBehavior = BehaviorBulletCreate();
 				BehaviorRead(bulletBehavior, stream);
 				EntityAddBehavior(entity, bulletBehavior);
+			}
+			else if (strstr(token, "BehaviorAsteroid"))
+			{
+				Behavior* asteroidBehavior = BehaviorAsteroidCreate();
+				BehaviorRead(asteroidBehavior, stream);
+				EntityAddBehavior(entity, asteroidBehavior);
+			}
+			else if (strstr(token, "BehaviorHudText"))
+			{
+				Behavior* hudBehavior = BehaviorHudTextCreate();
+				BehaviorHudTextRead(hudBehavior, stream);
+				EntityAddBehavior(entity, hudBehavior);
+			}
+			else if (strstr(token, "Collider"))
+			{
+				Collider* collider = ColliderCreate();
+				ColliderRead(collider, stream);
+				EntityAddCollider(entity, collider);
 			}
 			else if(token[0] == '\0')
 			{ 

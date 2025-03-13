@@ -89,14 +89,16 @@ static void BehaviorAsteroidCollisionHandler(Entity* entity1, const Entity* enti
 // (Hint: Use calloc() to ensure that all member variables are initialized to 0.)
 Behavior* BehaviorAsteroidCreate(void)
 {
-	BehaviorAsteroid* asteroidBehavior = calloc(1, sizeof(Behavior));
+	BehaviorAsteroid* asteroidBehavior = calloc(1, sizeof(BehaviorAsteroid));
 
 	if (asteroidBehavior)
 	{
-		asteroidBehavior->base.memorySize = sizeof(Behavior);
+		asteroidBehavior->base.memorySize = sizeof(BehaviorAsteroid);
+
 		asteroidBehavior->base.onExit = BehaviorAsteroidExit;
 		asteroidBehavior->base.onInit = BehaviorAsteroidInit;
 		asteroidBehavior->base.onUpdate = BehaviorAsteroidUpdate;
+
 		asteroidBehavior->base.stateCurr = cAsteroidInvalid;
 		asteroidBehavior->base.stateNext = cAsteroidInvalid;
 

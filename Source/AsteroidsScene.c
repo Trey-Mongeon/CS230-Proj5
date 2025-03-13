@@ -16,10 +16,16 @@
 #include "AsteroidsScene.h"
 #include "DGL.h"
 #include "EntityFactory.h"
+#include "ScoreSystem.h"
+#include "Scene.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
 //------------------------------------------------------------------------------
+
+static const unsigned cAsteroidSpawnInitial = 8;
+static const unsigned cAsteroidSpawnMaximum = 20;
+
 
 //------------------------------------------------------------------------------
 // Private Structures:
@@ -31,6 +37,7 @@ typedef struct AsteroidsScene
 	Scene	base;
 
 	// Add any scene-specific variables second.
+	unsigned asteroidSpawnCount;
 
 } AsteroidsScene;
 
@@ -52,6 +59,10 @@ static void AsteroidsSceneUpdate(float dt);
 static void AsteroidsSceneExit(void);
 static void AsteroidsSceneUnload(void);
 static void AsteroidsSceneRender(void);
+
+static void AsteroidsSceneSpawnAsteroidWave(void);
+static void AsteroidsSceneSpawnAsteroid(void);
+
 
 //------------------------------------------------------------------------------
 // Instance Variable:
@@ -84,17 +95,41 @@ const Scene* AsteroidsSceneGetInstance(void)
 // Load any resources used by the scene.
 static void AsteroidsSceneLoad(void)
 {
+	ScoreSystemClear();
 }
 
 // Initialize the entities and variables used by the scene.
 static void AsteroidsSceneInit()
 {
 	Entity* spaceshipEntity = EntityFactoryBuild("Spaceship");
-
 	if (spaceshipEntity)
 	{
 		SceneAddEntity(spaceshipEntity);
 	}
+
+	Entity* asteroidsScoreEntity = EntityFactoryBuild("AsteroidsScore");
+	if (asteroidsScoreEntity)
+	{
+		SceneAddEntity(asteroidsScoreEntity);
+	}
+
+	Entity* asteroidsHighScoreEntity = EntityFactoryBuild("AsteroidsHighScore");
+	if (asteroidsHighScoreEntity)
+	{
+		SceneAddEntity(asteroidsHighScoreEntity);
+	}
+
+	Entity* asteroidsWaveEntity = EntityFactoryBuild("AsteroidsWave");
+	if (asteroidsWaveEntity)
+	{
+		SceneAddEntity(asteroidsWaveEntity);
+	}
+
+	ScoreSystemReset();
+
+	instance.asteroidSpawnCount = cAsteroidSpawnInitial;
+	
+	AsteroidsSceneSpawnAsteroidWave();
 
 	DGL_Color bgColor = { 0,0,0,0 };
 	DGL_Graphics_SetBackgroundColor(&bgColor);
@@ -107,6 +142,12 @@ static void AsteroidsSceneInit()
 //	 dt = Change in time (in seconds) since the last game loop.
 static void AsteroidsSceneUpdate(float dt)
 {
+	Entity* foundEntity = SceneFindEntityByName("Asteroid");
+
+	if (foundEntity)
+	{
+		AsteroidsSceneSpawnAsteroidWave();
+	}
 	// Tell the compiler that the 'dt' variable is unused.
 	UNREFERENCED_PARAMETER(dt);
 }
@@ -126,3 +167,26 @@ static void AsteroidsSceneUnload(void)
 {
 }
 
+
+static void AsteroidsSceneSpawnAsteroidWave(void)
+{
+	ScoreSystemIncreaseWave();
+	for (unsigned int i = 0; i < instance.asteroidSpawnCount; ++i)
+	{
+		AsteroidsSceneSpawnAsteroid();
+	}
+	if (instance.asteroidSpawnCount < cAsteroidSpawnMaximum)
+	{
+		++instance.asteroidSpawnCount;
+	}
+}
+
+
+static void AsteroidsSceneSpawnAsteroid(void)
+{
+	Entity* Asteroid = EntityFactoryBuild("Asteroid");
+	if (Asteroid)
+	{
+		SceneAddEntity(Asteroid);
+	}
+}

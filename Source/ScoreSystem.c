@@ -19,6 +19,13 @@
 // Private Constants:
 //------------------------------------------------------------------------------
 
+enum valueID
+{
+	score = 0,
+	highScore,
+	waveCount
+};
+
 //------------------------------------------------------------------------------
 // Private Structures:
 //------------------------------------------------------------------------------
@@ -73,6 +80,76 @@ BaseSystem* ScoreSystemGetInstance()
 	// Return a reference to the instance of this system.
 	return (BaseSystem*)&instance;
 }
+
+
+// Clear the Score System
+// (Set the score, highScore, and waveCount variables to 0.)
+void ScoreSystemClear(void)
+{
+	instance.score = 0;
+	instance.highScore = 0;
+	instance.waveCount = 0;
+}
+
+
+// Reset the Score System.
+// (Step 1: The highScore variable should be updated if score is higher.)
+// (Step 2: The score and waveCount variables should be set to zero.)
+void ScoreSystemReset(void)
+{
+	if (instance.score > instance.highScore)
+	{
+		instance.highScore = instance.score;
+	}
+	instance.score = 0;
+	instance.waveCount = 0;
+}
+
+
+// Get the specified value from the Score System.
+// (HINT: There many different ways to handle this.  Two options include:
+//   - Store the Score System variables in an array and use this index
+//     to access into the array.
+//   - Use a switch-statement to access the correct variable.)
+// returns:
+//   The value stored in the specified variable.
+unsigned ScoreSystemGetValue(ScoreSystemId valueId)
+{
+	switch (valueId)
+	{
+	case score:
+		return instance.score;
+		break;
+
+	case highScore:
+		return instance.highScore;
+		break;
+
+	case waveCount:
+		return instance.waveCount;
+		break;
+
+	default:
+		return 999999;
+	}
+}
+
+
+// Increase the current score by a specified amount.
+// Params:
+//   amount = The amount to be added to the score.
+void ScoreSystemIncreaseScore(unsigned amount)
+{
+	instance.score += amount;
+}
+
+
+// Increase the current wave count by one.
+void ScoreSystemIncreaseWave(void)
+{
+	++instance.waveCount;
+}
+
 
 //------------------------------------------------------------------------------
 // Private Functions:

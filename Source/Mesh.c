@@ -116,7 +116,8 @@ void MeshRead(Mesh* mesh, Stream stream)
 {
 	if (mesh)
 	{
-		if (strcmp(StreamReadToken(stream), "Mesh") == 0)
+		const char* token = StreamReadToken(stream);
+		if (strcmp(token, "Mesh") == 0)
 		{
 			strcpy_s(mesh->name, sizeof(mesh->name), StreamReadToken(stream));
 			int vertAmnt = StreamReadInt(stream);
@@ -137,7 +138,7 @@ void MeshRead(Mesh* mesh, Stream stream)
 			}
 			mesh->meshResource = DGL_Graphics_EndMesh();
 		}
-		else if (strcmp(StreamReadToken(stream), "Quad") == 0)
+		else if (strcmp(token, "Quad") == 0)
 		{
 			DGL_Vec2 halfSize;
 			StreamReadVector2D(stream, &halfSize);
