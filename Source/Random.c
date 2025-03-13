@@ -57,9 +57,8 @@ void RandomInit()
 //   A random number in the interval [rangeMin, rangeMax].
 int RandomRange(int rangeMin, int rangeMax)
 {
-	float result = (float)rand() / (RAND_MAX + 1);
-	int random = rangeMin + (int)(result * (rangeMax - rangeMin));
-	return random;
+	int result = rangeMin + rand() / (RAND_MAX /(rangeMax - rangeMin + 1) + 1);
+	return result;
 }
 
 // Generate a random floating-point number in the interval [rangeMin, rangeMax] (inclusive).

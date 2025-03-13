@@ -150,10 +150,7 @@ void ColliderCheck(Collider* collider, Collider* other)
 	float radius2 = otherScale->x / 2.0f;
 	DGL_Vec2 otherTranslation = *TransformGetTranslation(otherTransform);
 
-	DGL_Vec2 vecBetween;
-	Vector2DSub(&vecBetween, &otherTranslation, &colliderTranslation);
-
-	float lengthBetween = Vector2DLength(&vecBetween);
+	float lengthBetween = Vector2DDistance(&colliderTranslation, &otherTranslation);
 
 	if (lengthBetween <= radius1 + radius2)
 	{

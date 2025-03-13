@@ -228,12 +228,6 @@ static void BehaviorSpaceshipUpdateRotation(Behavior* behavior, float dt)
 		float rotVel = 0.0f;
 		PhysicsSetRotationalVelocity(parentPhysics, rotVel);
 	}
-
-	// REMOVE THIS WHEN DONE TESTING***********************************************************************************
-	if (DGL_Input_KeyDown('R'))
-	{
-		behavior->stateNext = cSpaceshipDead;
-	}
 }
 
 

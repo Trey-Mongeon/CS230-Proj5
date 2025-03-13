@@ -133,6 +133,7 @@ void SceneUpdate(const Scene* scene, float dt)
 		(*scene->update)(dt);
 
 		EntityContainerUpdateAll(entities, dt);
+		EntityContainerCheckCollisions(entities);
 	}
 }
 

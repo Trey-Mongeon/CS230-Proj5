@@ -19,6 +19,7 @@
 #include "Vector2D.h"
 #include "Transform.h"
 #include "Physics.h"
+#include "ScoreSystem.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -154,6 +155,8 @@ static void BehaviorAsteroidSetPosition(BehaviorAsteroid* behavior)
 {
 	DGL_Vec2 window = DGL_Window_GetSize();
 
+	Vector2DScale(&window, &window, 0.5f);
+
 	Transform* entityTransform = EntityGetTransform(behaviorAsteroid->base.parent);
 
 	DGL_Vec2 asteroidPosition = *TransformGetTranslation(entityTransform);
@@ -212,6 +215,10 @@ static void BehaviorAsteroidSetVelocity(BehaviorAsteroid* behavior)
 	DGL_Vec2 vecFromAngle;
 	Vector2DFromAngleDeg(&vecFromAngle, angle);
 
+	float speed = RandomRangeFloat(asteroidSpeedMin, asteroidSpeedMax);
+
+	Vector2DScale(&vecFromAngle, &vecFromAngle, speed);
+
 	PhysicsSetVelocity(entityPhysics, &vecFromAngle);
 
 }
@@ -221,7 +228,10 @@ static void BehaviorAsteroidCollisionHandler(Entity* entity1, const Entity* enti
 {
 	if (entity1 && entity2)
 	{
-		//ScoreSystemIncreaseScore(20);
-		EntityDestroy(entity1);
+		if (EntityIsNamed(entity2, "Spaceship") || EntityIsNamed(entity2, "Bullet"))
+		{
+			ScoreSystemIncreaseScore(20);
+			EntityDestroy(entity1); 
+		}
 	}
 }

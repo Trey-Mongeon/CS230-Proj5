@@ -532,19 +532,17 @@ void EntityUpdate(Entity* entity, float dt)
 {
 	if (entity)
 	{
-		if (entity->transform && entity->physics)
-		{
-		PhysicsUpdate(entity->physics, entity->transform, dt);
-		}
-
 		if (entity->animation)
 		{
-		AnimationUpdate(entity->animation, dt);
+			AnimationUpdate(entity->animation, dt);
 		}
-
 		if (entity->behavior)
 		{
 			BehaviorUpdate(entity->behavior, dt);
+		}
+		if (entity->transform && entity->physics)
+		{
+			PhysicsUpdate(entity->physics, entity->transform, dt);
 		}
 	}
 }
