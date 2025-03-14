@@ -154,8 +154,6 @@ static void BehaviorAsteroidSetPosition(BehaviorAsteroid* behavior)
 {
 	DGL_Vec2 window = DGL_Window_GetSize();
 
-	TraceMessage("Window Size: %f, %f", window.x, window.y);
-
 	Vector2DScale(&window, &window, 0.5f);
 
 	Transform* entityTransform = EntityGetTransform(behavior->base.parent);

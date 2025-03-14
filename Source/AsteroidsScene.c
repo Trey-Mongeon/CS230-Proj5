@@ -19,11 +19,6 @@
 #include "ScoreSystem.h"
 #include "Scene.h"
 
-// REMOVE THIS
-#include "Entity.h"
-#include "Transform.h"
-#include "assert.h"
-#include "Trace.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -149,17 +144,6 @@ static void AsteroidsSceneInit()
 static void AsteroidsSceneUpdate(float dt)
 {
 	Entity* foundEntity = SceneFindEntityByName("Asteroid");
-
-	if (foundEntity)
-	{
-	// TESTING CODE
-	Transform* asteroidTransform = EntityGetTransform(foundEntity);
-	DGL_Vec2 asteroidPosition = *TransformGetTranslation(asteroidTransform);
-	//assert(asteroidPosition.x != 0.0f && "Asteroid at 0,0");
-	
-	TraceMessage("Asteroid Position: %f %f", asteroidPosition.x, asteroidPosition.y);
-
-	}
 
 	if (!foundEntity)
 	{
