@@ -318,7 +318,7 @@ static void BehaviorSpaceshipCollisionHandler(Entity* entity1, Entity* entity2)
 	if (entity1 && entity2)
 	{
 		if (EntityIsNamed(entity2, "Asteroid"))
-		{
+		{ 
 			Behavior* entity1Behavior = EntityGetBehavior(entity1);
 			entity1Behavior->stateNext = cSpaceshipDead;
 		}

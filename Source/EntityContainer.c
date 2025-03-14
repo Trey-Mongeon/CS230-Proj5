@@ -218,6 +218,7 @@ void EntityContainerUpdateAll(EntityContainer* entities, float dt)
 				--entities->entityCount;
 				entities->entitiesArr[i] = (entities->entitiesArr[entities->entityCount]);
 				(entities->entitiesArr[entities->entityCount]) = NULL;
+				--i;
 			}
 		}
 	}

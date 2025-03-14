@@ -20,6 +20,7 @@
 #include "Transform.h"
 #include "Physics.h"
 #include "ScoreSystem.h"
+#include "Trace.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -67,8 +68,6 @@ typedef struct BehaviorAsteroid
 //------------------------------------------------------------------------------
 // Private Variables:
 //------------------------------------------------------------------------------
-
-BehaviorAsteroid* behaviorAsteroid;
 
 //------------------------------------------------------------------------------
 // Private Function Declarations:
@@ -118,7 +117,7 @@ Behavior* BehaviorAsteroidCreate(void)
 
 static void BehaviorAsteroidInit(Behavior* behavior)
 {
-	behaviorAsteroid = (BehaviorAsteroid*)behavior;
+	BehaviorAsteroid* behaviorAsteroid = (BehaviorAsteroid*)behavior;
 
 	if (behaviorAsteroid->base.stateCurr == cAsteroidIdle)
 	{
@@ -155,11 +154,13 @@ static void BehaviorAsteroidSetPosition(BehaviorAsteroid* behavior)
 {
 	DGL_Vec2 window = DGL_Window_GetSize();
 
+	TraceMessage("Window Size: %f, %f", window.x, window.y);
+
 	Vector2DScale(&window, &window, 0.5f);
 
-	Transform* entityTransform = EntityGetTransform(behaviorAsteroid->base.parent);
+	Transform* entityTransform = EntityGetTransform(behavior->base.parent);
 
-	DGL_Vec2 asteroidPosition = *TransformGetTranslation(entityTransform);
+	DGL_Vec2 asteroidPosition;
 
 	switch (behavior->origin)
 	{
@@ -210,7 +211,7 @@ static void BehaviorAsteroidSetVelocity(BehaviorAsteroid* behavior)
 		break;
 	}
 
-	Physics* entityPhysics = EntityGetPhysics(behaviorAsteroid->base.parent);
+	Physics* entityPhysics = EntityGetPhysics(behavior->base.parent);
 
 	DGL_Vec2 vecFromAngle;
 	Vector2DFromAngleDeg(&vecFromAngle, angle);
@@ -228,7 +229,12 @@ static void BehaviorAsteroidCollisionHandler(Entity* entity1, const Entity* enti
 {
 	if (entity1 && entity2)
 	{
-		if (EntityIsNamed(entity2, "Spaceship") || EntityIsNamed(entity2, "Bullet"))
+		if (EntityIsNamed(entity2, "Spaceship"))
+		{
+			ScoreSystemIncreaseScore(20);
+			EntityDestroy(entity1);
+		}
+		if( EntityIsNamed(entity2, "Bullet"))
 		{
 			ScoreSystemIncreaseScore(20);
 			EntityDestroy(entity1); 

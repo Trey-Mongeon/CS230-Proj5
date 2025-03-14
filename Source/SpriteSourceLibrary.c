@@ -132,7 +132,7 @@ static const SpriteSource* SpriteSourceLibraryFind(const char* sourceName)
 //	   else return NULL.
 const SpriteSource* SpriteSourceLibraryBuild(const char* spriteSourceName)
 {
-	if (spriteSourceName == NULL)
+	if (spriteSourceName == NULL || !strcmp(spriteSourceName, "None"))
 	{
 		return NULL;
 	}

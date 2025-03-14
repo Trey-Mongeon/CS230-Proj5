@@ -17,7 +17,6 @@
 #include "BaseSystem.h"
 #include "Engine.h"
 #include "Trace.h"
-#include "Random.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -96,7 +95,6 @@ bool EngineInit()
 			return FALSE;
 		}
 	}
-	RandomInit();
 	return true;
 }
 

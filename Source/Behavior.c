@@ -126,14 +126,17 @@ void BehaviorUpdate(Behavior* behavior, float dt)
 			if (behavior->onExit)
 			{
 				(behavior->onExit)(behavior);
-				behavior->stateCurr = behavior->stateNext;
 
-				if (behavior->onInit)
-				{
-					(behavior->onInit)(behavior);
-				}
+			}
+
+			behavior->stateCurr = behavior->stateNext;
+
+			if (behavior->onInit)
+			{
+				(behavior->onInit)(behavior);
 			}
 		}
+
 		if (behavior->onUpdate)
 		{
 			(behavior->onUpdate)(behavior, dt);
