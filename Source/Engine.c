@@ -11,12 +11,11 @@
 
 #include "stdafx.h"
 #include <assert.h>
-
 #include "DGL.h"
-
 #include "BaseSystem.h"
 #include "Engine.h"
 #include "Trace.h"
+#include "Random.h"
 
 //------------------------------------------------------------------------------
 // Private Constants:
@@ -72,6 +71,8 @@ bool EngineInit()
 	// Initialize the Tracing/Logging module.
 	TraceInit();
 	TraceMessage("Engine: Init");
+
+	RandomInit();
 
 	//--------------------------------------------------------------------------
 	// Initialize all systems.
